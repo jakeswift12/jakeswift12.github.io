@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>Is Baker Mayfield overrated? - SPMC Project</title>
+<meta property="og:title" content="Is Baker Mayfield overrated? - SPMC Project">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://swifteeers.grithub.io">GitHub</a></li>
+    
+    <li><a href="/about/">Jacob Swift</a></li>
+    
+    <li><a href="https://twitter.com/swifteeers12">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">9 min read</span>
+    
+
+    <h1 class="article-title">Is Baker Mayfield overrated?</h1>
+
+    
+    <span class="article-date">2021-04-20</span>
+    
+
+    <div class="article-content">
+      
+<script src="/2021/04/20/is-baker-mayfield-overrated/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>I am a Browns fan but don’t ask me why. I have been a fan of the team since I was 12 years old and have experienced a lot of agony in those years. This past season our starting quarterback Baker Mayfield led us to the playoffs and gave us our first playoff win since 2002. But yet, I still hear over and over again “Baker Mayfield is overrated,” so I wanted to test this assumption and match up his year three stats to the other 31 starting quarterback’s with their year three stats.</p>
+<p>First, I will be importing the necessary libraries in order to achieve these statistics. I have gathered all of my data from profootballrefernce.com</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.3     v purrr   0.3.4
+## v tibble  3.1.1     v dplyr   1.0.5
+## v tidyr   1.1.3     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.1</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(scales)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;scales&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     discard</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     col_factor</code></pre>
+<pre class="r"><code>library(ggalt)</code></pre>
+<pre><code>## Warning: package &#39;ggalt&#39; was built under R version 4.0.4</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;ggalt&#39;:
+##   method                  from   
+##   grid.draw.absoluteGrob  ggplot2
+##   grobHeight.absoluteGrob ggplot2
+##   grobWidth.absoluteGrob  ggplot2
+##   grobX.absoluteGrob      ggplot2
+##   grobY.absoluteGrob      ggplot2</code></pre>
+<pre class="r"><code>library(kableExtra)</code></pre>
+<pre><code>## Warning: package &#39;kableExtra&#39; was built under R version 4.0.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;kableExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     group_rows</code></pre>
+<pre class="r"><code>library(gtable)
+library(ggrepel)</code></pre>
+<pre><code>## Warning: package &#39;ggrepel&#39; was built under R version 4.0.4</code></pre>
+<pre class="r"><code>library(gt)</code></pre>
+<pre><code>## Warning: package &#39;gt&#39; was built under R version 4.0.5</code></pre>
+<p>I am now going to import the data that we will be using for this theory.</p>
+<pre class="r"><code>players &lt;- read_csv(&quot;startingQBs.csv&quot;)</code></pre>
+<pre><code>## Warning: Duplicated column names deduplicated: &#39;Yds&#39; =&gt; &#39;Yds_1&#39; [26]</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   .default = col_double(),
+##   Tm = col_character(),
+##   Pos = col_character(),
+##   QBrec = col_character(),
+##   Player = col_character()
+## )
+## i Use `spec()` for the full column specifications.</code></pre>
+<p>I first have to filter out Baker Mayfield’s statistics in order to clearly see where he ranks on this list along with the other 31 starting quarterback’s.</p>
+<pre class="r"><code>bm &lt;- players %&gt;% filter(Player == &quot;Baker Mayfield&quot;)</code></pre>
+<p>So, what makes for a good quarterback? Well, I believe a good quarterback must be able to score touchdowns. More touchdowns means a better chance to win the game. Here I have created a bar chart labeling all 32 starting quarterback’s and how many touchdowns they threw in their third season as a starter. Baker Mayfield is highlighted in red below.</p>
+<pre class="r"><code>ggplot() + geom_bar(data=players, aes(x=reorder(Player, TD), weight=TD )) + geom_bar(data=bm, aes(x=reorder(Player, TD), weight=TD), fill=&quot;red&quot;) + coord_flip()+
+labs(x=&quot;Player &quot;, y=&quot;Touchdowns&quot;, title=&quot;Touchdowns in Year 3&quot;, subtitle=&quot;Baker is not too bad.&quot;, caption=&quot;Source: profootballreference | By Jake Swift&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 12, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=8), 
+    panel.grid.minor = element_blank()
+    ) </code></pre>
+<p><img src="/2021/04/20/is-baker-mayfield-overrated/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+As you can see Baker is not too shabby huh? Baker is sitting at just about the halfway point compared to all the other quarterback’s in year three. Mayfield threw for 26 touchdowns in year three which is more than Russell Wilson, Tom Brady, and Ben Roethlisberger just to name a few.</p>
+<p>Quarterbacks are needed to complete passes and gain yards to move down field to score correct? Well, here I have made a scatterplot featuring quarterback’s that have been the best at doing just that in their third year.</p>
+<pre class="r"><code>players %&gt;%
+ggplot() +
+  geom_point(data=players, aes(x=Yds, y=Cmp), color=&quot;grey&quot;)  +
+  geom_point(data=players, aes(x=Yds, y=Cmp), color=&quot;red&quot;)  +
+  geom_text_repel(data=players, aes(x=Yds, y=Cmp, label=Player)) +
+  geom_text_repel(data=bm, aes(x=Yds, y=Cmp, label=Player)) + 
+  geom_smooth(data=players, aes(x=Yds, y=Cmp), method=&quot;lm&quot;,se=FALSE) +
+labs(x=&quot;Yards &quot;, y=&quot;Completions&quot;, title= &quot;Completions and Total Yards&quot;, subtitle=&quot;Baker again, not too far from the best.&quot;, caption=&quot;Source: profootballreference | By Jake Swift&quot;) + 
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 12, face = &quot;bold&quot;),
+    axis.title = element_text(size = 8), 
+    plot.subtitle = element_text(size=8), 
+    panel.grid.minor = element_blank()
+    ) </code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: ggrepel: 18 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<p><img src="/2021/04/20/is-baker-mayfield-overrated/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+As you can see Baker Mayfield is not too bad in this aspect of the game here either, completing over 62% of his passes and accumulating over 3500 yards in just his third year in the league which was better than NFL MVP Lamar Jackson.</p>
+<p>Another important statistic in being a quarterback is how many interceptions you throw. A lot of interceptions equals a bad quarterback. Below I have made a table showing you how many passes were attempted by each quarterback and also the number of interceptions thrown by each.</p>
+<pre class="r"><code>players %&gt;%
+  select(Player, Att, Int) %&gt;%
+  gt() %&gt;%
+  cols_label(
+    Player = &quot;Player&quot;,
+    Att = &quot;Attempts&quot;,
+    Int = &quot;Interceptions&quot;
+  ) %&gt;%
+  tab_header(
+    title = &quot;Attempts &amp; Interceptions&quot;,
+    subtitle = &quot;Baker only 8 interceptions on almost 500 passes??&quot;
+  ) %&gt;% tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;title&quot;)
+  ) %&gt;% tab_style(
+    style = cell_text(color = &quot;black&quot;, align = &quot;left&quot;),
+    locations = cells_title(&quot;subtitle&quot;)
+  ) %&gt;%
+  tab_source_note(
+    source_note = &quot;By Jake Swift&quot;
+  ) %&gt;%
+  tab_source_note(
+    source_note = md(&quot;Source: [Pro Football Reference](https://www.pro-football-reference.com/)&quot;)
+  ) %&gt;% tab_style(
+    style = cell_text(color = &quot;black&quot;, weight = &quot;bold&quot;, size=18),
+    locations = cells_body(
+      columns = vars(Player)
+    )
+  ) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;red&quot;, weight = &quot;bold&quot;),
+    locations = cells_body(
+      columns = vars(Att),
+      rows = Att == 486
+    )
+  ) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;red&quot;, weight = &quot;bold&quot;),
+    locations = cells_body(
+      columns = vars(Int),
+      rows = Int == 8
+    )
+  )</code></pre>
+<pre><code>## Warning: The `.dots` argument of `group_by()` is deprecated as of dplyr 1.0.0.</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#iiyszbsrfp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#iiyszbsrfp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#iiyszbsrfp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#iiyszbsrfp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#iiyszbsrfp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#iiyszbsrfp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#iiyszbsrfp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#iiyszbsrfp .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#iiyszbsrfp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#iiyszbsrfp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#iiyszbsrfp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#iiyszbsrfp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#iiyszbsrfp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#iiyszbsrfp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#iiyszbsrfp .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#iiyszbsrfp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#iiyszbsrfp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#iiyszbsrfp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#iiyszbsrfp .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#iiyszbsrfp .gt_left {
+  text-align: left;
+}
+
+#iiyszbsrfp .gt_center {
+  text-align: center;
+}
+
+#iiyszbsrfp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#iiyszbsrfp .gt_font_normal {
+  font-weight: normal;
+}
+
+#iiyszbsrfp .gt_font_bold {
+  font-weight: bold;
+}
+
+#iiyszbsrfp .gt_font_italic {
+  font-style: italic;
+}
+
+#iiyszbsrfp .gt_super {
+  font-size: 65%;
+}
+
+#iiyszbsrfp .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="iiyszbsrfp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="3" class="gt_heading gt_title gt_font_normal" style="color: black; text-align: left; font-weight: bold;">Attempts &amp; Interceptions</th>
+    </tr>
+    <tr>
+      <th colspan="3" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="color: black; text-align: left;">Baker only 8 interceptions on almost 500 passes??</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Player</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Attempts</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">Interceptions</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Kyler Murray</td>
+      <td class="gt_row gt_right">558</td>
+      <td class="gt_row gt_right">12</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Matt Ryan</td>
+      <td class="gt_row gt_right">571</td>
+      <td class="gt_row gt_right">9</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Lamar Jackson</td>
+      <td class="gt_row gt_right">376</td>
+      <td class="gt_row gt_right">9</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Josh Allen</td>
+      <td class="gt_row gt_right">572</td>
+      <td class="gt_row gt_right">10</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Teddy Bridgewater</td>
+      <td class="gt_row gt_right">447</td>
+      <td class="gt_row gt_right">9</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Mitchell Trubisky</td>
+      <td class="gt_row gt_right">516</td>
+      <td class="gt_row gt_right">10</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Andy Dalton</td>
+      <td class="gt_row gt_right">586</td>
+      <td class="gt_row gt_right">20</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Baker Mayfield</td>
+      <td class="gt_row gt_right" style="color: red; font-weight: bold;">486</td>
+      <td class="gt_row gt_right" style="color: red; font-weight: bold;">8</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Dak Prescott</td>
+      <td class="gt_row gt_right">526</td>
+      <td class="gt_row gt_right">7</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Drew Lock</td>
+      <td class="gt_row gt_right">443</td>
+      <td class="gt_row gt_right">15</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Matthew Stafford</td>
+      <td class="gt_row gt_right">663</td>
+      <td class="gt_row gt_right">16</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Aaron Rodgers</td>
+      <td class="gt_row gt_right">475</td>
+      <td class="gt_row gt_right">11</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Deshaun Watson</td>
+      <td class="gt_row gt_right">495</td>
+      <td class="gt_row gt_right">12</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Phillip Rivers</td>
+      <td class="gt_row gt_right">478</td>
+      <td class="gt_row gt_right">11</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Mike Glennon</td>
+      <td class="gt_row gt_right">11</td>
+      <td class="gt_row gt_right">0</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Patrick Mahomes</td>
+      <td class="gt_row gt_right">484</td>
+      <td class="gt_row gt_right">5</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Ryan Fitzpatrick</td>
+      <td class="gt_row gt_right">441</td>
+      <td class="gt_row gt_right">15</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Kirk Cousins</td>
+      <td class="gt_row gt_right">540</td>
+      <td class="gt_row gt_right">13</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Cam Newton</td>
+      <td class="gt_row gt_right">473</td>
+      <td class="gt_row gt_right">13</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Drew Brees</td>
+      <td class="gt_row gt_right">554</td>
+      <td class="gt_row gt_right">11</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Daniel Jones</td>
+      <td class="gt_row gt_right">448</td>
+      <td class="gt_row gt_right">10</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Sam Darnold</td>
+      <td class="gt_row gt_right">364</td>
+      <td class="gt_row gt_right">11</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Derek Carr</td>
+      <td class="gt_row gt_right">560</td>
+      <td class="gt_row gt_right">6</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Carson Wentz</td>
+      <td class="gt_row gt_right">401</td>
+      <td class="gt_row gt_right">7</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Ben Roethlisberger</td>
+      <td class="gt_row gt_right">469</td>
+      <td class="gt_row gt_right">23</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Tyrod Taylor</td>
+      <td class="gt_row gt_right">420</td>
+      <td class="gt_row gt_right">4</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Jimmy Garoppolo</td>
+      <td class="gt_row gt_right">476</td>
+      <td class="gt_row gt_right">13</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Russell Wilson</td>
+      <td class="gt_row gt_right">452</td>
+      <td class="gt_row gt_right">7</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Jared Goff</td>
+      <td class="gt_row gt_right">561</td>
+      <td class="gt_row gt_right">12</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Tom Brady</td>
+      <td class="gt_row gt_right">527</td>
+      <td class="gt_row gt_right">12</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Ryan Tannehill</td>
+      <td class="gt_row gt_right">590</td>
+      <td class="gt_row gt_right">12</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="color: black; font-size: 18; font-weight: bold;">Case Keenum</td>
+      <td class="gt_row gt_right">247</td>
+      <td class="gt_row gt_right">5</td>
+    </tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="3">By Jake Swift</td>
+    </tr>
+    <tr>
+      <td class="gt_sourcenote" colspan="3">Source: <a href="https://www.pro-football-reference.com/">Pro Football Reference</a></td>
+    </tr>
+  </tfoot>
+  
+</table></div>
+<p>As you can see here, Baker only has 8 interceptions with almost 500 passes thrown in his third year in the league. This puts him around seventh fewest interceptions on this list meaning he handles the ball well. Wouldn’t you want a quarterback that is good at making minimal mistakes?</p>
+<p>After taking in all of this information what do you think? According to my graphs Baker is at least in the top half of every statistic I used, which included touchdowns, completions, yards, and interceptions…not too bad for a guy who is still perceived to be “overrated.”</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+
